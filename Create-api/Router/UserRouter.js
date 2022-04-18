@@ -9,8 +9,9 @@ router.post("/create-user", controller.createUser);
 router.get("/get-all-user", controller.getAllUser);
 //get one user Info
 router.post("/get-user", controller.getUser);
-// //login user
-// router.post("login-user", controller.loginUser);
+
+//login user
+router.post("/login-user", controller.loginUser);
 
 // //update user
 router.post("/update-user", controller.updateUser);

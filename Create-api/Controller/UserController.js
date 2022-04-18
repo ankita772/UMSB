@@ -4,6 +4,10 @@ const generateAuthToken = require("../../config/utility");
 const createUser = async (req, res, next) => {
   try {
     const { username, mobile, email, password } = req.body;
+    const userDetails = await UserModel.findOne({ email: email }).exec();
+    if (userDetails) {
+      res.send("User already exists");
+    }
     const user = await new UserModel({ username, mobile, email, password });
     await user.save();
     const token = generateAuthToken(user._id);
@@ -15,6 +19,23 @@ const createUser = async (req, res, next) => {
 };
 
 //login user
+const loginUser = async (req, res, next) => {
+  try {
+    console.log("here");
+    const { email, password } = req.body;
+    const user = await UserModel.findOne({ email: email }).exec();
+    if (!user) {
+      res.status(401).send("Invalid email");
+    } else if (user.password !== password) {
+      res.status(401).send("Invalid password");
+    } else {
+      const token = generateAuthToken(user._id);
+      res.send({ user: user, token: token });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
 
 //get all users
 const getAllUser = async (req, res, next) => {
@@ -66,4 +87,11 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-module.exports = { createUser, getAllUser, getUser, updateUser, deleteUser };
+module.exports = {
+  createUser,
+  loginUser,
+  getAllUser,
+  getUser,
+  updateUser,
+  deleteUser,
+};
